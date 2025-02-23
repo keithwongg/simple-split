@@ -120,6 +120,8 @@ function renderSummary() {
         settledUpDict[namesArr[i]] = (incompleteProgress) ? 0 : 1 // default to false
         let br = document.createElement('br')
         pTagsToAdd.push(br)
+
+        let localPTags = [namesArr[i]]
         for (let j = 0; j < namesArr.length; j++) {
             if (i === j) { // avoid if same person
                 continue
@@ -127,6 +129,7 @@ function renderSummary() {
 
             let owingValue = adjMatrix[i][j]
             let receivingValue = adjMatrix[j][i]
+
 
             /*
              2D Matrix of possibilities:
@@ -144,8 +147,10 @@ function renderSummary() {
             if (owingValue >= 0 && receivingValue >= 0) {
                 if (owingValue > receivingValue) {
                     pTagsToAdd.push(createPTag(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(owingValue - receivingValue)}`))
+                    localPTags.push(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(owingValue - receivingValue)}`)
                 } else if (receivingValue > owingValue) {
                     pTagsToAdd.push(createPTag(`${namesArr[i]} to receive $${formatToShow2dpInUi(receivingValue - owingValue)} from ${namesArr[j]}`))
+                    localPTags.push(`${namesArr[i]} to receive $${formatToShow2dpInUi(receivingValue - owingValue)} from ${namesArr[j]}`)
                 }
                 continue
             }
@@ -154,12 +159,14 @@ function renderSummary() {
             if (owingValue >= 0 && receivingValue < 0) {
                 let valueAfterContra = Math.abs(receivingValue - owingValue)
                 pTagsToAdd.push(createPTag(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(valueAfterContra)}`))
+                localPTags.push(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(valueAfterContra)}`)
                 continue
             }
 
             // o-r+
             if (owingValue < 0 && receivingValue >= 0) {
                 pTagsToAdd.push(createPTag(`${namesArr[i]} overpaid ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(owingValue))}`))
+                localPTags.push(`${namesArr[i]} overpaid ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(owingValue))}`)
                 continue
             }
 
@@ -168,17 +175,36 @@ function renderSummary() {
                 if (receivingValue < owingValue) {
                     let valueAfterContra = Math.abs(receivingValue - owingValue)
                     pTagsToAdd.push(createPTag(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(valueAfterContra))}`))
+                    localPTags.push(`${namesArr[i]} owes ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(valueAfterContra))}`)
                 } else if (owingValue > receivingValue) {
                     let valueAfterContra = Math.abs(owingValue - receivingValue)
                     pTagsToAdd.push(createPTag(`${namesArr[i]} overpaid ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(valueAfterContra))}`))
+                    localPTags.push(`${namesArr[i]} overpaid ${namesArr[j]} $${formatToShow2dpInUi(Math.abs(valueAfterContra))}`)
                 }
                 continue
             }
         }
+
+        let card = document.createElement('div')
+        card.classList.add("my-2", "p-2", "flex", "items-center", "justify-between", "w-full", "h-full", "border-2", "border-black","rounded-md","shadow-sm", "bg-slate-50")
+        let innerBlock = ""
+        for (let i = 1; i < localPTags.length; i++) {
+            innerBlock += localPTags[i]
+        }
+        let cardHtml = `
+        <div class="flex-col flex-wrap">
+            <div class="font-bold">${namesArr[i]}</div>
+            ${innerBlock}
+        </div>
+        `
+        card.innerHTML = cardHtml
+        let container = document.getElementById('balance-cards')
+        container.appendChild(card)
+
     }
 
     let allSettledUp = true
-    console.log(`settledupdict: ${JSON.stringify(settledUpDict)}`)
+    // console.log(`settledupdict: ${JSON.stringify(settledUpDict)}`)
     for (const [key, value] of Object.entries(settledUpDict)) {
         if (value === 1) {
             pTagsToAdd.push(createPTag(`${key} is all settled up!`))
