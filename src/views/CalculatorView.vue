@@ -1,10 +1,203 @@
 <script setup>
+import { ref, computed } from 'vue'
+
+const NAMES_KEY = "names";
+const ITEMS_KEY = "items";
+const P2P_KEY = "p2p";
+const ADJMATRIX_KEY = "adjmatrix"; // this holds 2 matrix, for the balances
+
+const NAMES = ref([]);
+const showNames = computed(() => NAMES.value.length > 0)
+const nameInput = ref("");
+const nameExistError = ref(false);
+
+const paidBy = ref("");
+const paidAmount = ref("");
+
+function clearData() {
+    NAMES.value = []
+    clearNameExistError()
+}
+
+function addNames() {
+    if (nameInput.length === 0) {
+        return
+    }
+    let titleCaseName = nameInput.value.trim().split(' ').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
+    let index = NAMES.value.indexOf(titleCaseName)
+    if (index > -1) {
+        nameExistError.value = true
+        return
+    }
+    NAMES.value.push(titleCaseName)
+    nameInput.value = ""
+    clearNameExistError()
+}
+
+function addExpense() {
+    console.log(`paidamoutn-monkey-${paidAmount.value}`)
+}
+
+function clearNameExistError() {
+    if (nameExistError.value) {
+        nameExistError.value = false
+    }
+}
+
+function removeName(event) {
+    NAMES.value = NAMES.value.filter((name) => name !== event)
+}
+
 </script>
 
 <template>
-    <h1>this is a calculator</h1>
+    <main>
 
+        <h1>Split Expenses</h1>
+        <p>{{ NAMES }}</p>
+        <div>
+            <p>If you want to restart from scratch and clear all data, click the button below:</p>
+            <Button class="space-gap" @click="clearData()" label="Clear All Data" severity="warn"
+                variant="outlined"></Button>
+        </div>
+
+        <Divider />
+
+        <div class="card">
+            <Stepper value="1">
+
+                <StepItem value="1">
+                    <Step>People Involved</Step>
+                    <StepPanel v-slot="{ activateCallback }">
+                        <div class="flex flex-col h-48">
+                            <div
+                                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
+                                Add the names of all people involved in the division of expenses
+                            </div>
+                            <Message v-if="nameExistError" severity="error" icon="pi pi-times-circle"
+                                class="mb-2 space-gap">
+                                Name Already Exist</Message>
+                            <div class="custom-buttons-block">
+                                <InputGroup>
+                                    <InputGroupAddon>
+                                        <OverlayBadge v-if="showNames" :value="NAMES.length" size="small">
+                                            <i class="pi pi-user"></i>
+                                        </OverlayBadge>
+                                        <i v-else class="pi pi-user"></i>
+                                    </InputGroupAddon>
+                                    <InputText @keyup.enter="addNames()" v-model="nameInput" placeholder="Name" />
+                                    <Button class="space-gap" @click="addNames()" label="Add +" severity="secondary"
+                                        variant="outlined"></Button>
+                                </InputGroup>
+                            </div>
+                        </div>
+                        <div class="space-gap" v-if="showNames">
+                            <Chip v-for="name in NAMES" :label="name" @remove="removeName(name)" removable />
+                        </div>
+                        <div class="py-6 space-gap">
+                            <Button label="Next" @click="activateCallback('2')" />
+                        </div>
+                    </StepPanel>
+                </StepItem>
+
+                <StepItem value="2">
+                    <Step>Who Paid for Items?</Step>
+                    <StepPanel v-slot="{ activateCallback }">
+                        <div class="flex flex-col h-48">
+                            <div
+                                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
+                                Add an expense paid by an individual, and who to split that expense with
+                            </div>
+                        </div>
+                        <div class="space-gap">
+                            <InputGroup>
+                                <InputGroupAddon>
+                                    <i class="pi pi-user"></i>
+                                </InputGroupAddon>
+                                <Select v-model="paidBy" :options="NAMES" placeholder="Paid By Who?"
+                                    class="w-full md:w-56" />
+                            </InputGroup>
+                            <InputGroup>
+                                <InputGroupAddon>$</InputGroupAddon>
+                                <InputNumber @keyup.enter="addExpense()" v-model="paidAmount" placeholder="Price"
+                                    mode="currency" currency="SGD" />
+                                <Button class="space-gap" @click="addExpense()" label="Add +" severity="secondary"
+                                    variant="outlined"></Button>
+                            </InputGroup>
+                        </div>
+                        <div class="space-gap">
+                            <Card class="custom-card">
+                                <template #title>Simple Card</template>
+                                <template #content>
+                                    <p class="m-0">
+                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed
+                                        consequuntur error repudiandae numquam deserunt quisquam repellat libero
+                                        asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
+                                        neque
+                                        quas!
+                                    </p>
+                                </template>
+                            </Card>
+                        </div>
+                        <div class="flex py-6 gap-3 custom-buttons-block">
+                            <Button label="Back" severity="secondary" @click="activateCallback('1')" />
+                            <Button label="Next" @click="activateCallback('3')" />
+                        </div>
+                    </StepPanel>
+                </StepItem>
+
+                <StepItem value="3">
+                    <Step>Who Paid Who?</Step>
+                    <StepPanel v-slot="{ activateCallback }">
+                        <div class="flex flex-col h-48">
+                            <div
+                                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
+                                Content III</div>
+                        </div>
+                        <div class="py-6">
+                            <Button label="Back" severity="secondary" @click="activateCallback('2')" />
+                        </div>
+                    </StepPanel>
+                </StepItem>
+
+            </Stepper>
+        </div>
+
+        <div v-if="showSummary">
+            <Divider />
+            <Card>
+                <template #title>Simple Card</template>
+                <template #content>
+                    <p class="m-0">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
+                        repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione
+                        quam
+                        perferendis esse, cupiditate neque
+                        quas!
+                    </p>
+                </template>
+            </Card>
+        </div>
+    </main>
 </template>
 
 <style scoped>
+.space-gap {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.p-inputgroup {
+    margin-top: 12px;
+}
+
+.custom-buttons-block {
+    display: flex;
+    gap: 12px;
+}
+
+.custom-card {
+    border-color: gray;
+    border-style: solid;
+}
 </style>

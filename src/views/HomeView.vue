@@ -1,22 +1,16 @@
 <script setup>
-import Button from 'primevue/button'
 import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
 </script>
 
 <template>
     <main>
         <h1>Simple Split</h1>
-        <p>This is a simple calculator to split expenses with friends</p>
+        <p>This is a simple one page calculator to split bills with people.</p>
+        <p>Data is stored solely in local storage on the browser and nowhere else.</p>
         <div class="buttons-container">
-            <div class="button-items">
-                <i class="pi pi-question"></i>
-                <Button as="router-link" to="/how" label="How To Use" />
-            </div>
-            <div class="button-items">
-                <i class="pi pi-play"></i>
-                <Button as="router-link" to="/calculate" label="Start Calculating" />
-            </div>
             <RouterButtonWithIcon icon-name="play" route="/calculate" label="Start Calculating"></RouterButtonWithIcon>
+            <RouterButtonWithIcon icon-name="question" route="/how" label="How To Use" severity="secondary">
+            </RouterButtonWithIcon>
         </div>
     </main>
 </template>
@@ -36,17 +30,6 @@ main>p {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 40px;
-}
-
-.button-items {
-    display: flex;
-    flex-direction: row;
-    place-items: center;
-    gap: 12px;
-}
-
-.button-items>a {
-    min-width: 150px;
+    margin-top: 20px;
 }
 </style>

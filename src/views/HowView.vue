@@ -1,3 +1,7 @@
+<script setup>
+import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
+</script>
+
 <template>
   <main>
     <h1>How to Use</h1>
@@ -8,15 +12,9 @@
       <li>See the results</li>
     </ul>
 
-    <div class="button-items">
-      <i class="pi pi-play"></i>
-      <Button as="router-link" to="/calculate" label="Start Calculating" />
-    </div>
+    <RouterButtonWithIcon icon-name="play" route="/calculate" label="Start Calculating"></RouterButtonWithIcon>
   </main>
 </template>
 
-<script setup>
-
-</script>
 
 <style scoped></style>
