@@ -7,7 +7,7 @@ export function getFromLocalStorage(key) {
 
 export function getFromLocalStorageAsArray(key) {
     let itemsArr = getFromLocalStorage(key)
-    if (itemsArr === undefined) {
+    if (itemsArr === undefined || itemsArr === 'undefined') {
         itemsArr = []
     } else {
         itemsArr = JSON.parse(itemsArr)
@@ -39,11 +39,11 @@ export function removeItemFromStorageById(id, key) {
     return itemsArray
 }
 
-export function clearAll() {
-    localStorage.removeItem(NAMES_KEY)
-    localStorage.removeItem(ITEMS_KEY)
-    localStorage.removeItem(P2P_KEY)
-    localStorage.removeItem(ADJMATRIX_KEY)
+export function clearAll(names_key, items_key, p2p_key, adjmatrix_key) {
+    localStorage.removeItem(names_key)
+    localStorage.removeItem(items_key)
+    localStorage.removeItem(p2p_key)
+    localStorage.removeItem(adjmatrix_key)
     location.reload()
 }
 

@@ -1,5 +1,6 @@
 <script setup>
-import * as Utils from "../helpers/utils.js";
+import * as Utils from "../../helpers/utils.js";
+import * as Names from "./names.js";
 import { ref, computed, onMounted } from 'vue'
 import CustomChip from '@/components/CustomChip.vue';
 
@@ -8,41 +9,23 @@ const ITEMS_KEY = "items";
 const P2P_KEY = "p2p";
 const ADJMATRIX_KEY = "adjmatrix"; // this holds 2 matrix, for the balances
 
+function clearData() {
+    NAMES.value = []
+    Utils.clearAll(NAMES_KEY, ITEMS_KEY, P2P_KEY, ADJMATRIX_KEY)
+    clearNameExistError()
+}
+
+/* STEP 1: NAMES */
 const NAMES = ref(Utils.getFromLocalStorageAsArray(NAMES_KEY));
-// const showNames = computed(() => NAMES.value.length > 0)
-const showNames = false
 const nameInput = ref("");
 const nameExistError = ref(false);
 
-const paidBy = ref("");
-const paidAmount = ref("");
-const itemDescription = ref("");
+const showNames = computed(() => NAMES.value.length > 0)
 
-const toSplitWith = ref("");
-
-const login = ref(false);
-const isLoggedIn = computed({
-    get: () => {
-        login.value = localStorage.getItem('isLoggedIn')
-    },
-    set: (v) => {
-        login.value = v
-        localStorage.setItem('isLoggedIn', v)
+function clearNameExistError() {
+    if (nameExistError.value) {
+        nameExistError.value = false
     }
-})
-
-function setLogin() {
-    console.log(`login: ${login.value}`)
-    isLoggedIn.value = !login.value
-}
-
-onMounted(() => {
-    isLoggedIn.value = false
-})
-
-function clearData() {
-    NAMES.value = []
-    clearNameExistError()
 }
 
 function addNames() {
@@ -56,58 +39,26 @@ function addNames() {
         return
     }
     NAMES.value.push(titleCaseName)
+    Utils.saveInLocalStorage(NAMES_KEY, NAMES.value)
     nameInput.value = ""
     clearNameExistError()
-}
-
-// function saveName(name) {
-//     if (nameInput.length === 0) {
-//         return
-//     }
-//     let titleCaseName = nameInput.value.trim().split(' ').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
-//     let index = NAMES.value.indexOf(titleCaseName)
-//     if (index > -1) {
-//         nameExistError.value = true
-//         return
-//     }
-//     NAMES.value.push(titleCaseName)
-//     if (NAMES === undefined) {
-//         localStorage.setItem(NAMES_KEY, JSON.stringify(name))
-//         return
-//     }
-//     let namesArray = JSON.parse(NAMES)
-//     namesArray.push(name)
-//     let uniqueNames = [...new Set(namesArray)]
-//     NAMES.value = uniqueNames
-// }
-
-// function removeName(name) {
-//     let names = getFromLocalStorage(NAMES_KEY)
-//     if (names === undefined) {
-//         return;
-//     }
-//     let namesArray = JSON.parse(names)
-//     let index = namesArray.indexOf(name)
-//     if (index > -1) {
-//         namesArray.splice(index, 1)
-//     }
-//     saveInLocalStorage(NAMES_KEY, namesArray)
-//     return namesArray
-// }
-
-function addExpense() {
-    console.log(`paidamoutn-monkey-${paidAmount.value}`)
-}
-
-function clearNameExistError() {
-    if (nameExistError.value) {
-        nameExistError.value = false
-    }
 }
 
 function removeName(event) {
     let i = NAMES.value.indexOf(event)
     NAMES.value.splice(i, 1)
+    Utils.saveInLocalStorage(NAMES_KEY, NAMES.value)
+}
+
+/* STEP 2: PAID AMOUNT */
+const paidBy = ref("");
+const paidAmount = ref("");
+const itemDescription = ref("");
+
+const toSplitWith = ref("");
+
+function addExpense() {
+    console.log(`paidamoutn-monkey-${paidAmount.value}`)
 }
 
 </script>
@@ -118,7 +69,7 @@ function removeName(event) {
         <h1>Split Expenses</h1>
         <p>{{ NAMES }}</p>
         <p>{{ login }}</p>
-        <Button class="space-gap" @click="setLogin()" label="set login" severity="warn" variant="outlined"></Button>
+
         <div>
             <p>If you want to restart from scratch and clear all data, click the button below:</p>
             <Button class="space-gap" @click="clearData()" label="Clear All Data" severity="warn"
