@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
+import CustomChip from '@/components/CustomChip.vue';
 
 const NAMES_KEY = "names";
 const ITEMS_KEY = "items";
@@ -13,6 +14,9 @@ const nameExistError = ref(false);
 
 const paidBy = ref("");
 const paidAmount = ref("");
+const itemDescription = ref("");
+
+const toSplitWith = ref("");
 
 function clearData() {
     NAMES.value = []
@@ -45,7 +49,8 @@ function clearNameExistError() {
 }
 
 function removeName(event) {
-    NAMES.value = NAMES.value.filter((name) => name !== event)
+    let i = NAMES.value.indexOf(event)
+    NAMES.value.splice(i, 1)
 }
 
 </script>
@@ -86,13 +91,13 @@ function removeName(event) {
                                         <i v-else class="pi pi-user"></i>
                                     </InputGroupAddon>
                                     <InputText @keyup.enter="addNames()" v-model="nameInput" placeholder="Name" />
-                                    <Button class="space-gap" @click="addNames()" label="Add +" severity="secondary"
+                                    <Button class="space-gap" @click="addNames()" label="Add +" severity="primary"
                                         variant="outlined"></Button>
                                 </InputGroup>
                             </div>
                         </div>
                         <div class="space-gap" v-if="showNames">
-                            <Chip v-for="name in NAMES" :label="name" @remove="removeName(name)" removable />
+                            <CustomChip v-for="(name, _) in NAMES" :label="name" @custom-remove="removeName(name)" />
                         </div>
                         <div class="py-6 space-gap">
                             <Button label="Next" @click="activateCallback('2')" />
@@ -118,13 +123,27 @@ function removeName(event) {
                                     class="w-full md:w-56" />
                             </InputGroup>
                             <InputGroup>
-                                <InputGroupAddon>$</InputGroupAddon>
-                                <InputNumber @keyup.enter="addExpense()" v-model="paidAmount" placeholder="Price"
-                                    mode="currency" currency="SGD" />
-                                <Button class="space-gap" @click="addExpense()" label="Add +" severity="secondary"
-                                    variant="outlined"></Button>
+                                <IftaLabel>
+                                    <InputText id="itemDescriptionInput" v-model="itemDescription"
+                                        max-fraction-digits="2" />
+                                    <label for="itemDescriptionInput">Item Description</label>
+                                </IftaLabel>
+                                <IftaLabel variant="on">
+                                    <InputNumber v-model="paidAmount" inputId="priceInput" max-fraction-digits="2" />
+                                    <label for="priceInput">Price Input</label>
+                                </IftaLabel>
+
                             </InputGroup>
+
                         </div>
+
+                        <div class="card flex justify-center">
+                            <MultiSelect v-model="toSplitWith" :options="NAMES" filter
+                                placeholder="Select Who To Split With?" :maxSelectedLabels="15"
+                                class="w-full md:w-80" />
+                        </div>
+                        <Button class="space-gap" @click="addExpense()" label="Add Expense +" severity="primary"
+                            variant="outlined"></Button>
                         <div class="space-gap">
                             <Card class="custom-card">
                                 <template #title>Simple Card</template>
@@ -199,5 +218,9 @@ function removeName(event) {
 .custom-card {
     border-color: gray;
     border-style: solid;
+}
+
+.full-width {
+    width: 100%;
 }
 </style>
