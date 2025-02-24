@@ -72,3 +72,15 @@ export function sortItemsByWhoPaid(items) {
         return 0
     })
 }
+
+export function titleCase(inputString) {
+    return inputString
+        .trim()
+        .split(' ')
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(' ')
+}
+
+export function deepCopyArray(arr) {
+    return Object.assign([], arr)
+}

@@ -1,7 +1,6 @@
 <script setup>
 import * as Utils from "../../helpers/utils.js";
-import * as Names from "./names.js";
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import CustomChip from '@/components/CustomChip.vue';
 
 const NAMES_KEY = "names";
@@ -32,7 +31,7 @@ function addNames() {
     if (nameInput.length === 0) {
         return
     }
-    let titleCaseName = nameInput.value.trim().split(' ').map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
+    let titleCaseName = Utils.titleCase(nameInput.value)
     let index = NAMES.value.indexOf(titleCaseName)
     if (index > -1) {
         nameExistError.value = true
@@ -51,14 +50,47 @@ function removeName(event) {
 }
 
 /* STEP 2: PAID AMOUNT */
+const ITEMS = ref(Utils.getFromLocalStorageAsArray(ITEMS_KEY))
 const paidBy = ref("");
 const paidAmount = ref("");
 const itemDescription = ref("");
-
 const toSplitWith = ref("");
 
 function addExpense() {
-    console.log(`paidamoutn-monkey-${paidAmount.value}`)
+    let test = Utils.deepCopyArray(toSplitWith.value)
+    console.log(JSON.stringify(test))
+    let item = {
+        id: ITEMS.value.length + 1,
+        cost: paidAmount.value,
+        cost_per_pax: Utils.roundToTwoDp(paidAmount.value / NAMES.value.length),
+        description: Utils.titleCase(itemDescription.value),
+        to_receive_from: Utils.deepCopyArray(toSplitWith.value),
+        who_paid: paidBy.value,
+    }
+    ITEMS.value.push(item)
+    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
+    paidAmount.value = ""
+    itemDescription.value = ""
+}
+
+function removeExpense(id) {
+    ITEMS.value = Utils.removeItemFromStorageById(id, ITEMS_KEY)
+}
+
+function removeNameFromExpense(id, name) {
+    let indexOfObj = ITEMS.value.map(e => e.id).indexOf(id)
+    let currentItem = ITEMS.value[indexOfObj]
+    let nameExist = currentItem.to_receive_from.some(n => n === name)
+    if (!nameExist) {
+        console.log('no name to be deleted')
+        return
+    }
+    let index = currentItem.to_receive_from.indexOf(name)
+    currentItem.to_receive_from.splice(index, 1)
+    if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
+        ITEMS.value.splice(indexOfObj, 1)
+    }
+    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
 }
 
 </script>
@@ -154,19 +186,32 @@ function addExpense() {
                         </div>
                         <Button class="space-gap" @click="addExpense()" label="Add Expense +" severity="primary"
                             variant="outlined"></Button>
+                        <p>Total number of items: <Badge :value="ITEMS.length"></Badge>
+                        </p>
                         <div class="space-gap">
-                            <Card class="custom-card">
-                                <template #title>Simple Card</template>
-                                <template #content>
+
+                            <div class="card">
+                                <Fieldset v-for="item in ITEMS" :legend="`${item.description}: ${item.who_paid}`"
+                                    :toggleable="true">
                                     <p class="m-0">
-                                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed
-                                        consequuntur error repudiandae numquam deserunt quisquam repellat libero
-                                        asperiores earum nam nobis, culpa ratione quam perferendis esse, cupiditate
-                                        neque
-                                        quas!
+                                        Paid by: {{ item.who_paid }}
                                     </p>
-                                </template>
-                            </Card>
+                                    <p class="m-0">
+                                        Split with:
+                                        <CustomChip v-for="name in item.to_receive_from" :label="name"
+                                            @custom-remove="removeNameFromExpense(item.id, name)" />
+                                    </p>
+                                    <p class="m-0">
+                                        Total Cost: {{ item.cost }}
+                                    </p>
+                                    <p class="m-0">
+                                        Cost Per Pax: {{ item.cost_per_pax }}
+                                    </p>
+                                    <Button icon="pi pi-times" @click="removeExpense(item.id)" severity="danger"
+                                        size="small" aria-label="Remove Expense"></Button>
+                                </Fieldset>
+                            </div>
+
                         </div>
                         <div class="flex py-6 gap-3 custom-buttons-block">
                             <Button label="Back" severity="secondary" @click="activateCallback('1')" />
@@ -232,5 +277,15 @@ function addExpense() {
 
 .full-width {
     width: 100%;
+}
+
+fieldset {
+    position: relative;
+}
+
+fieldset :deep(.p-button) {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
 }
 </style>
