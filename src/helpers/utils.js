@@ -39,10 +39,9 @@ export function removeItemFromStorageById(id, key) {
     return itemsArray
 }
 
-export function clearAll(names_key, items_key, p2p_key, adjmatrix_key) {
+export function clearAll(names_key, items_key, adjmatrix_key) {
     localStorage.removeItem(names_key)
     localStorage.removeItem(items_key)
-    localStorage.removeItem(p2p_key)
     localStorage.removeItem(adjmatrix_key)
     location.reload()
 }

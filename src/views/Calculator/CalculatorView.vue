@@ -1,101 +1,71 @@
 <script setup>
 import * as Utils from "../../helpers/utils.js";
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import CustomChip from '@/components/CustomChip.vue';
-
-const NAMES_KEY = "names";
-const ITEMS_KEY = "items";
-const P2P_KEY = "p2p";
-const ADJMATRIX_KEY = "adjmatrix"; // this holds 2 matrix, for the balances
-
-function clearData() {
-    NAMES.value = []
-    Utils.clearAll(NAMES_KEY, ITEMS_KEY, P2P_KEY, ADJMATRIX_KEY)
-    clearNameExistError()
-}
+import Step1 from "./Step1.vue";
+import { NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY } from "@/constants/constants.js";
 
 /* STEP 1: NAMES */
-const NAMES = ref(Utils.getFromLocalStorageAsArray(NAMES_KEY));
-const nameInput = ref("");
-const nameExistError = ref(false);
 
-const showNames = computed(() => NAMES.value.length > 0)
+// function getListOtherThanPersonWhoPaid(name) {
+//     let names = Utils.getFromLocalStorageAsArray(NAMES_KEY)
+//     return names.filter((x) => x !== name)
+// }
 
-function clearNameExistError() {
-    if (nameExistError.value) {
-        nameExistError.value = false
-    }
-}
+// /* STEP 2: PAID AMOUNT / EXPENSES */
+// const ITEMS = ref([])
+// const paidBy = ref("");
+// const paidAmount = ref("");
+// const itemDescription = ref("");
+// const toSplitWith = ref("");
 
-function addNames() {
-    if (nameInput.length === 0) {
-        return
-    }
-    let titleCaseName = Utils.titleCase(nameInput.value)
-    let index = NAMES.value.indexOf(titleCaseName)
-    if (index > -1) {
-        nameExistError.value = true
-        return
-    }
-    NAMES.value.push(titleCaseName)
-    Utils.saveInLocalStorage(NAMES_KEY, NAMES.value)
-    nameInput.value = ""
-    clearNameExistError()
-}
+// function addExpense() {
+//     let test = Utils.deepCopyArray(toSplitWith.value)
+//     console.log(JSON.stringify(test))
+//     let item = {
+//         id: ITEMS.value.length + 1,
+//         cost: paidAmount.value,
+//         cost_per_pax: Utils.roundToTwoDp(paidAmount.value / NAMES.value.length),
+//         description: Utils.titleCase(itemDescription.value),
+//         to_receive_from: Utils.deepCopyArray(toSplitWith.value),
+//         who_paid: paidBy.value,
+//     }
+//     ITEMS.value.push(item)
+//     Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
+//     paidAmount.value = ""
+//     itemDescription.value = ""
+// }
 
-function removeName(event) {
-    let i = NAMES.value.indexOf(event)
-    NAMES.value.splice(i, 1)
-    Utils.saveInLocalStorage(NAMES_KEY, NAMES.value)
-}
+// function removeExpense(id) {
+//     ITEMS.value = Utils.removeItemFromStorageById(id, ITEMS_KEY)
+// }
 
-function getListOtherThanPersonWhoPaid(name) {
-    return NAMES.value.filter((x) => x !== name)
-}
+// function removeNameFromExpense(id, name) {
+//     let indexOfObj = ITEMS.value.map(e => e.id).indexOf(id)
+//     let currentItem = ITEMS.value[indexOfObj]
+//     let nameExist = currentItem.to_receive_from.some(n => n === name)
+//     if (!nameExist) {
+//         console.log('no name to be deleted')
+//         return
+//     }
+//     let index = currentItem.to_receive_from.indexOf(name)
+//     currentItem.to_receive_from.splice(index, 1)
+//     if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
+//         ITEMS.value.splice(indexOfObj, 1)
+//     }
+//     Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
+// }
 
-/* STEP 2: PAID AMOUNT / EXPENSES */
-const ITEMS = ref(Utils.getFromLocalStorageAsArray(ITEMS_KEY))
-const paidBy = ref("");
-const paidAmount = ref("");
-const itemDescription = ref("");
-const toSplitWith = ref("");
 
-function addExpense() {
-    let test = Utils.deepCopyArray(toSplitWith.value)
-    console.log(JSON.stringify(test))
-    let item = {
-        id: ITEMS.value.length + 1,
-        cost: paidAmount.value,
-        cost_per_pax: Utils.roundToTwoDp(paidAmount.value / NAMES.value.length),
-        description: Utils.titleCase(itemDescription.value),
-        to_receive_from: Utils.deepCopyArray(toSplitWith.value),
-        who_paid: paidBy.value,
-    }
-    ITEMS.value.push(item)
-    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
-    paidAmount.value = ""
-    itemDescription.value = ""
-}
+// watch(ITEMS, (newItems, oldItems) => {
+//     Utils.saveInLocalStorage(ITEMS_KEY, newItems)
+// })
 
-function removeExpense(id) {
-    ITEMS.value = Utils.removeItemFromStorageById(id, ITEMS_KEY)
-}
-
-function removeNameFromExpense(id, name) {
-    let indexOfObj = ITEMS.value.map(e => e.id).indexOf(id)
-    let currentItem = ITEMS.value[indexOfObj]
-    let nameExist = currentItem.to_receive_from.some(n => n === name)
-    if (!nameExist) {
-        console.log('no name to be deleted')
-        return
-    }
-    let index = currentItem.to_receive_from.indexOf(name)
-    currentItem.to_receive_from.splice(index, 1)
-    if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
-        ITEMS.value.splice(indexOfObj, 1)
-    }
-    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
-}
+// function clearData() {
+//     NAMES.value = []
+//     ITEMS.value = []
+//     Utils.clearAll(NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY)
+// }
 
 </script>
 
@@ -118,37 +88,10 @@ function removeNameFromExpense(id, name) {
                 <StepItem value="1">
                     <Step>People Involved</Step>
                     <StepPanel v-slot="{ activateCallback }">
-                        <div class="flex flex-col h-48">
-                            <div
-                                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-                                Add the names of all people involved in the division of expenses
-                            </div>
-                            <Message v-if="nameExistError" severity="error" icon="pi pi-times-circle"
-                                class="mb-2 space-gap">
-                                Name Already Exist</Message>
-                            <div class="custom-buttons-block">
-                                <InputGroup>
-                                    <InputGroupAddon>
-                                        <OverlayBadge v-if="showNames" :value="NAMES.length" size="small">
-                                            <i class="pi pi-user"></i>
-                                        </OverlayBadge>
-                                        <i v-else class="pi pi-user"></i>
-                                    </InputGroupAddon>
-                                    <InputText @keyup.enter="addNames()" v-model="nameInput" placeholder="Name" />
-                                    <Button class="space-gap" @click="addNames()" label="Add +" severity="primary"
-                                        variant="outlined"></Button>
-                                </InputGroup>
-                            </div>
-                        </div>
-                        <div class="space-gap" v-if="showNames">
-                            <CustomChip v-for="(name, _) in NAMES" :label="name" @custom-remove="removeName(name)" />
-                        </div>
-                        <div class="py-6 space-gap">
-                            <Button label="Next" @click="activateCallback('2')" />
-                        </div>
+                        <Step1 :activate-callback="activateCallback" />
                     </StepPanel>
                 </StepItem>
-
+                <!-- 
                 <StepItem value="2">
                     <Step>Who Paid for Items?</Step>
                     <StepPanel v-slot="{ activateCallback }">
@@ -220,7 +163,7 @@ function removeNameFromExpense(id, name) {
                             <Button as="router-link" to='/summary' label='Show Summary' />
                         </div>
                     </StepPanel>
-                </StepItem>
+                </StepItem> -->
             </Stepper>
         </div>
     </main>
