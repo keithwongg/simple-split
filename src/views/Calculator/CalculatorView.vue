@@ -49,7 +49,11 @@ function removeName(event) {
     Utils.saveInLocalStorage(NAMES_KEY, NAMES.value)
 }
 
-/* STEP 2: PAID AMOUNT */
+function getListOtherThanPersonWhoPaid(name) {
+    return NAMES.value.filter((x) => x !== name)
+}
+
+/* STEP 2: PAID AMOUNT / EXPENSES */
 const ITEMS = ref(Utils.getFromLocalStorageAsArray(ITEMS_KEY))
 const paidBy = ref("");
 const paidAmount = ref("");
@@ -99,8 +103,6 @@ function removeNameFromExpense(id, name) {
     <main>
 
         <h1>Split Expenses</h1>
-        <p>{{ NAMES }}</p>
-        <p>{{ login }}</p>
 
         <div>
             <p>If you want to restart from scratch and clear all data, click the button below:</p>
@@ -171,7 +173,7 @@ function removeNameFromExpense(id, name) {
                                     <label for="itemDescriptionInput">Item Description</label>
                                 </IftaLabel>
                                 <IftaLabel variant="on">
-                                    <InputNumber v-model="paidAmount" inputId="priceInput" max-fraction-digits="2" />
+                                    <InputNumber v-model="paidAmount" inputId="priceInput" :maxFractionDigits="2" />
                                     <label for="priceInput">Price Input</label>
                                 </IftaLabel>
 
@@ -180,7 +182,7 @@ function removeNameFromExpense(id, name) {
                         </div>
 
                         <div class="card flex justify-center">
-                            <MultiSelect v-model="toSplitWith" :options="NAMES" filter
+                            <MultiSelect v-model="toSplitWith" :options="getListOtherThanPersonWhoPaid(paidBy)" filter
                                 placeholder="Select Who To Split With?" :maxSelectedLabels="15"
                                 class="w-full md:w-80" />
                         </div>
@@ -194,7 +196,7 @@ function removeNameFromExpense(id, name) {
                                 <Fieldset v-for="item in ITEMS" :legend="`${item.description}: ${item.who_paid}`"
                                     :toggleable="true">
                                     <p class="m-0">
-                                        Paid by: {{ item.who_paid }}
+                                        Paid by: <b>{{ item.who_paid }}</b>
                                     </p>
                                     <p class="m-0">
                                         Split with:
@@ -205,7 +207,7 @@ function removeNameFromExpense(id, name) {
                                         Total Cost: {{ item.cost }}
                                     </p>
                                     <p class="m-0">
-                                        Cost Per Pax: {{ item.cost_per_pax }}
+                                        Cost Per Pax: <b>{{ item.cost_per_pax }}</b>
                                     </p>
                                     <Button icon="pi pi-times" @click="removeExpense(item.id)" severity="danger"
                                         size="small" aria-label="Remove Expense"></Button>
@@ -215,42 +217,11 @@ function removeNameFromExpense(id, name) {
                         </div>
                         <div class="flex py-6 gap-3 custom-buttons-block">
                             <Button label="Back" severity="secondary" @click="activateCallback('1')" />
-                            <Button label="Next" @click="activateCallback('3')" />
+                            <Button as="router-link" to='/summary' label='Show Summary' />
                         </div>
                     </StepPanel>
                 </StepItem>
-
-                <StepItem value="3">
-                    <Step>Who Paid Who?</Step>
-                    <StepPanel v-slot="{ activateCallback }">
-                        <div class="flex flex-col h-48">
-                            <div
-                                class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-                                Content III</div>
-                        </div>
-                        <div class="py-6">
-                            <Button label="Back" severity="secondary" @click="activateCallback('2')" />
-                        </div>
-                    </StepPanel>
-                </StepItem>
-
             </Stepper>
-        </div>
-
-        <div v-if="showSummary">
-            <Divider />
-            <Card>
-                <template #title>Simple Card</template>
-                <template #content>
-                    <p class="m-0">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error
-                        repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione
-                        quam
-                        perferendis esse, cupiditate neque
-                        quas!
-                    </p>
-                </template>
-            </Card>
         </div>
     </main>
 </template>
@@ -270,17 +241,13 @@ function removeNameFromExpense(id, name) {
     gap: 12px;
 }
 
-.custom-card {
-    border-color: gray;
-    border-style: solid;
-}
-
 .full-width {
     width: 100%;
 }
 
 fieldset {
     position: relative;
+    background-color: var(--p-surface-800);
 }
 
 fieldset :deep(.p-button) {
