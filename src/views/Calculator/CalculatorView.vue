@@ -1,21 +1,7 @@
 <script setup>
-import * as Utils from "../../helpers/utils.js";
-import { ref, computed, watch } from 'vue'
-import CustomChip from '@/components/CustomChip.vue';
 import Step1 from "./Step1.vue";
 import Step2 from "./Step2.vue";
-import { NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY } from "@/constants/constants.js";
-
-/* STEP 1: NAMES */
-
-/* STEP 2: PAID AMOUNT / EXPENSES */
-
-function clearData() {
-    NAMES.value = []
-    ITEMS.value = []
-    Utils.clearAll(NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY)
-}
-
+import { clearData } from "./calculatorStates.js";
 </script>
 
 <template>
@@ -55,29 +41,5 @@ function clearData() {
 .space-gap {
     margin-top: 20px;
     margin-bottom: 10px;
-}
-
-.p-inputgroup {
-    margin-top: 12px;
-}
-
-.custom-buttons-block {
-    display: flex;
-    gap: 12px;
-}
-
-.full-width {
-    width: 100%;
-}
-
-fieldset {
-    position: relative;
-    background-color: var(--p-surface-800);
-}
-
-fieldset :deep(.p-button) {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
 }
 </style>

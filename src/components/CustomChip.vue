@@ -5,14 +5,19 @@ const props = defineProps({
 </script>
 
 <template>
-    <Chip :label="props.label">
+    <Tag :label="props.label" class="custom-background" rounded severity="secondary">
         <p>{{ props.label }}</p>
         <span @click="$emit('customRemove')" class="pi pi-times-circle"></span>
-    </Chip>
+    </Tag>
 </template>
 
 <style scoped>
 span:hover {
     cursor: pointer;
+}
+
+.custom-background {
+    background-color: var(--p-surface-600);
+    margin: 4px;
 }
 </style>

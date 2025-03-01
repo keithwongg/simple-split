@@ -166,7 +166,7 @@ function contraBalances() {
 <template>
     <div>
         <h1>Summary</h1>
-        <p>{{ adjMatrix }}</p>
+
         <Divider />
         <Card v-for="(row, xIndex) in adjMatrix">
             <template #title>{{ names[xIndex] }}</template>

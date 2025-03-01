@@ -69,7 +69,6 @@ const confirmRemoveName = (name) => {
                 class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
                 Add the names of all people involved in the division of expenses
             </div>
-            <p>computed shownames: {{ showNames }}</p>
             <Message v-if="nameExistError" severity="error" icon="pi pi-times-circle" class="mb-2 space-gap">
                 Name Already Exist</Message>
             <div class="custom-buttons-block">
@@ -97,4 +96,17 @@ const confirmRemoveName = (name) => {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.space-gap {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.p-inputgroup {
+    margin-top: 12px;
+}
+
+.full-width {
+    width: 100%;
+}
+</style>

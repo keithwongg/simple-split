@@ -1,6 +1,6 @@
 import { reactive } from "vue";
-import { getFromLocalStorageAsArray, saveInLocalStorage, removeItemFromStorageById } from "@/helpers/utils";
-import { NAMES_KEY, ITEMS_KEY } from "@/constants/constants";
+import { getFromLocalStorageAsArray, saveInLocalStorage, removeItemFromStorageById, roundToTwoDp, clearAll } from "@/helpers/utils";
+import { NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY } from "@/constants/constants";
 
 export const NAMES = reactive({
     value: getFromLocalStorageAsArray(NAMES_KEY),
@@ -18,6 +18,9 @@ export const NAMES = reactive({
         // remove name in all items
         // then need to refresh component
     },
+    clear() {
+
+    }
 });
 
 
@@ -31,6 +34,7 @@ export const ITEMS = reactive({
         this.value = removeItemFromStorageById(id, ITEMS_KEY)
     },
     removeName(id, name) {
+        console.log(`name to be rmoeve`)
         let indexOfObj = ITEMS.value.map(e => e.id).indexOf(id)
         let currentItem = ITEMS.value[indexOfObj]
         let nameExist = currentItem.to_receive_from.some(n => n === name)
@@ -40,9 +44,14 @@ export const ITEMS = reactive({
         }
         let index = currentItem.to_receive_from.indexOf(name)
         currentItem.to_receive_from.splice(index, 1)
+        currentItem.cost_per_pax = roundToTwoDp(currentItem.cost / (currentItem.to_receive_from.length + 1))
         if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
             ITEMS.value.splice(indexOfObj, 1)
-            saveInLocalStorage(ITEMS_KEY, this.value)
         }
+        saveInLocalStorage(ITEMS_KEY, this.value)
     }
 })
+
+export function clearData() {
+    clearAll(NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY)
+}
