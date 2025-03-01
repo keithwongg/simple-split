@@ -3,6 +3,8 @@ import CustomChip from '@/components/CustomChip.vue';
 import { titleCase } from '@/helpers/utils.js';
 import { ref, computed } from 'vue';
 import { NAMES } from './calculatorStates';
+import { useConfirm } from 'primevue';
+import { useToast } from 'primevue';
 
 const props = defineProps({
     activateCallback: Function
@@ -10,6 +12,8 @@ const props = defineProps({
 const nameInput = ref('');
 const nameExistError = ref(false);
 const showNames = computed(() => NAMES.value.length > 0)
+const confirm = useConfirm()
+const toast = useToast()
 
 function addNames() {
     if (nameInput.value.length === 0) {
@@ -31,6 +35,30 @@ function clearNameExistError() {
         nameExistError.value = false
     }
 }
+
+const confirmRemoveName = (name) => {
+    confirm.require({
+        message: `Are you sure? All items related to ${name} will be deleted.`,
+        header: 'Delete Name',
+        icon: 'pi pi-info-circle',
+        rejectLabel: 'Cancel',
+        rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary',
+            outlined: true
+        },
+        acceptProps: {
+            label: 'Delete',
+            severity: 'danger'
+        },
+        accept: () => {
+            NAMES.remove(name)
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Name and related items deleted', life: 3000 });
+        },
+        reject: () => {
+        }
+    });
+};
 
 </script>
 
@@ -59,7 +87,9 @@ function clearNameExistError() {
             </div>
         </div>
         <div class="space-gap" v-if="showNames">
-            <CustomChip v-for="(name, _) in NAMES.value" :label="name" @custom-remove="NAMES.remove(name)" />
+            <Toast />
+            <ConfirmDialog></ConfirmDialog>
+            <CustomChip v-for="(name, _) in NAMES.value" :label="name" @custom-remove="confirmRemoveName(name)" />
         </div>
         <div class="py-6 space-gap">
             <Button label="Next" @click="props.activateCallback('2')" />
