@@ -7,9 +7,9 @@ import { NAMES } from './calculatorStates';
 const props = defineProps({
     activateCallback: Function
 })
-
 const nameInput = ref('');
 const nameExistError = ref(false);
+const showNames = computed(() => NAMES.value.length > 0)
 
 function addNames() {
     if (nameInput.value.length === 0) {
@@ -32,7 +32,6 @@ function clearNameExistError() {
     }
 }
 
-const showNames = computed(() => NAMES.value.length > 0)
 </script>
 
 <template>
