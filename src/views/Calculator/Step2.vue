@@ -65,7 +65,7 @@ function addExpense() {
         <Button class="space-gap" @click="addExpense()" label="Add Expense +" severity="primary"
             variant="outlined"></Button>
 
-        <ItemLogs />
+        <ItemLogs :editable="true" />
 
         <div class="flex py-6 gap-3 custom-buttons-block">
             <Button label="Back" severity="secondary" @click="activateCallback('1')" />

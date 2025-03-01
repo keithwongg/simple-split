@@ -3,6 +3,12 @@ import CustomChip from '@/components/CustomChip.vue';
 import { ref } from 'vue';
 import { NAMES, ITEMS } from './calculatorStates';
 
+const props = defineProps({
+    editable: {
+        type: Boolean,
+        required: true
+    }
+})
 const logTypes = ['By Items', 'By Name']
 const logType = ref('By Items')
 
@@ -13,6 +19,7 @@ function countItemsByName(name) {
 function getItemLabel(name) {
     return countItemsByName(name) > 1 ? 'items' : 'item'
 }
+
 </script>
 
 <template>
@@ -26,37 +33,35 @@ function getItemLabel(name) {
         <div class="space-gap">
             <div v-if="logType === 'By Name'">
                 <div v-for="name in NAMES.value" class="space-gap">
-                    <Card v-if="countItemsByName(name) > 0" class="space-gap custom-card">
-                        <template #title>
-                            <p>{{ name }} paid for
-                                <Badge :value="countItemsByName(name)" /> {{ getItemLabel(name) }}:
-                            </p>
-                        </template>
-                        <template #content>
-                            <div v-for="item in ITEMS.value">
-                                <div v-if="item.who_paid === name">
-                                    <div class="custom-item">
-                                        <p class="m-0 title">
-                                            {{ item.description }}
-                                        </p>
-                                        <p class="m-0">
-                                            Total Cost: {{ item.cost }}
-                                        </p>
-                                        <p class="m-0">
-                                            Cost Per Pax: <b>{{ item.cost_per_pax }}</b>
-                                        </p>
-                                        <p class="m-0">
-                                            Split with:
-                                            <CustomChip v-for="name in item.to_receive_from" :label="name"
-                                                @custom-remove="ITEMS.removeName(item.id, name)" />
-                                        </p>
-                                        <Button icon="pi pi-times" @click="ITEMS.remove(item.id)" severity="danger"
-                                            size="small" aria-label="Remove Expense"></Button>
+                    <Fieldset v-if="countItemsByName(name) > 0" class="space-gap custom-card"
+                        :legend="`${name} paid: ${countItemsByName(name)} ${getItemLabel(name)}`" :toggleable="true">
+                        <div v-for="(item, index) in ITEMS.value">
+                            <div v-if="item.who_paid === name">
+                                <div class="custom-item">
+                                    <div class="custom-badge">
+                                        <Badge :value="`#${index + 1}`" severity="secondary"/>
                                     </div>
+                                    <p class="m-0 title">
+                                        {{ item.description }}
+                                    </p>
+                                    <p class="m-0">
+                                        Total Cost: {{ item.cost }}
+                                    </p>
+                                    <p class="m-0">
+                                        Cost Per Pax: <b>{{ item.cost_per_pax }}</b>
+                                    </p>
+                                    <p class="m-0">
+                                        Split with:
+                                        <CustomChip v-for="name in item.to_receive_from" :label="name"
+                                            :editable="props.editable"
+                                            @custom-remove="ITEMS.removeName(item.id, name)" />
+                                    </p>
+                                    <Button v-if="props.editable" icon="pi pi-times" @click="ITEMS.remove(item.id)"
+                                        severity="danger" size="small" aria-label="Remove Expense"></Button>
                                 </div>
                             </div>
-                        </template>
-                    </Card>
+                        </div>
+                    </Fieldset>
                 </div>
             </div>
             <div v-else class="card">
@@ -73,11 +78,11 @@ function getItemLabel(name) {
                     </p>
                     <p class="m-0">
                         Split with:
-                        <CustomChip v-for="name in item.to_receive_from" :label="name"
+                        <CustomChip v-for="name in item.to_receive_from" :label="name" :editable="props.editable"
                             @custom-remove="ITEMS.removeName(item.id, name)" />
                     </p>
-                    <Button icon="pi pi-times" @click="ITEMS.remove(item.id)" severity="danger" size="small"
-                        aria-label="Remove Expense"></Button>
+                    <Button v-if="props.editable" icon="pi pi-times" @click="ITEMS.remove(item.id)" severity="danger"
+                        size="small" aria-label="Remove Expense"></Button>
                 </Fieldset>
             </div>
         </div>
@@ -120,5 +125,10 @@ fieldset :deep(.p-fieldset-legend-label) {
 .title {
     font-size: 16px;
     font-weight: bold;
+}
+
+.custom-badge {
+    position: absolute;
+    right: 30px;
 }
 </style>

@@ -114,7 +114,7 @@ function contraBalances() {
             </template>
         </Card> -->
 
-        <ItemLogs />
+        <ItemLogs :editable="false" />
         <Button as="router-link" to='/calculate' label='Edit Logs in Calculator' severity="primary" />
     </div>
 </template>
