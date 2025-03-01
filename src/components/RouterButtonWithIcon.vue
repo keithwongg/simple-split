@@ -27,6 +27,6 @@ const iconClass = ref(`pi pi-${props.iconName}`)
 }
 
 .button-items>a {
-    min-width: 150px;
+    min-width: 100%;
 }
 </style>

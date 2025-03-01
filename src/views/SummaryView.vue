@@ -73,56 +73,75 @@ function contraBalances() {
 </script>
 
 <template>
-    <div>
+    <div class="container">
         <h1>Summary</h1>
 
         <Divider />
-        <Card v-for="(row, xIndex) in adjMatrix">
-            <template #title>{{ NAMES.value[xIndex] }}</template>
-            <template #content>
-                <div v-for="(item, yIndex) in row">
-                    <p v-if="adjMatrix[xIndex][yIndex] > 0">
-                        To Receive From {{ NAMES.value[yIndex] }}: {{ adjMatrix[xIndex][yIndex] }}
-                    </p>
-                    <p v-if="adjMatrix[yIndex][xIndex] > 0">
-                        Owe {{ NAMES.value[yIndex] }}: {{ adjMatrix[yIndex][xIndex] }}
-                    </p>
-                </div>
-            </template>
-        </Card>
-        <Divider />
+        <div v-if="ITEMS.value.length >= 1">
+            <Card v-for="(row, xIndex) in adjMatrix">
+                <template #title>{{ NAMES.value[xIndex] }}</template>
+                <template #content>
+                    <div v-for="(item, yIndex) in row">
+                        <p v-if="adjMatrix[xIndex][yIndex] > 0">
+                            To Receive From {{ NAMES.value[yIndex] }}: {{ adjMatrix[xIndex][yIndex] }}
+                        </p>
+                        <p v-if="adjMatrix[yIndex][xIndex] > 0">
+                            Owe {{ NAMES.value[yIndex] }}: {{ adjMatrix[yIndex][xIndex] }}
+                        </p>
+                    </div>
+                </template>
+            </Card>
+            <Divider />
 
-        <h1>Items Logs</h1>
+            <h1>Items Logs</h1>
+            <ItemLogs :editable="false" />
 
-        <!-- <Card v-for="item in ITEMS.value" class="card-style">
-            <template #title>
-                {{ item.description }}
-            </template>
-            <template #content>
-                <p>
-                    Paid by: {{ item.who_paid }}
-                </p>
-                <p>
-                    Split with: <span v-for="name in item.to_receive_from">{{ name }}</span>
-                </p>
-                <p>
-                    Total Cost: {{ item.cost }}
-                </p>
-                <p>
-                    Cost Per Pax: {{ item.cost_per_pax }}
-                </p>
-            </template>
-        </Card> -->
 
-        <ItemLogs :editable="false" />
-        <Button as="router-link" to='/calculate' label='Edit Logs in Calculator' severity="primary" />
+            <div class="buttons">
+                <Button as="router-link" to='/calculate' label='Edit Logs in Calculator' severity="primary"
+                    class="button" />
+            </div>
+        </div>
+        <div v-else>
+            <p class="space-gap">No present items. Enter values in the calculator.</p>
+            <div class="buttons">
+                <Button as="router-link" to='/calculate' label='Start Calculating' severity="primary" class="button" />
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped>
+.space-gap {
+    margin-bottom: 20px;
+}
+
+.container {
+    height: 80vh;
+    width: 80vw;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
 .card-style {
     background-color: var(--p-surface-800);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     margin: 10px 0px;
+}
+
+.buttons {
+    max-width: 200px;
+    height: 100%;
+    width: 100%;
+}
+
+@media (max-width: 800px) {
+    .container {
+        padding: 54px 0px 0px 0px;
+    }
 }
 </style>

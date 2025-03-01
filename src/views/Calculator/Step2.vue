@@ -16,7 +16,7 @@ function addExpense() {
     let item = {
         id: ITEMS.value.length + 1,
         cost: roundToTwoDp(paidAmount.value),
-        cost_per_pax: roundToTwoDp(paidAmount.value / NAMES.value.length),
+        cost_per_pax: roundToTwoDp(paidAmount.value / toSplitWith.value.length),
         description: titleCase(itemDescription.value),
         to_receive_from: deepCopyArray(toSplitWith.value),
         who_paid: paidBy.value,

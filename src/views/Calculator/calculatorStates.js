@@ -44,7 +44,7 @@ export const ITEMS = reactive({
         }
         let index = currentItem.to_receive_from.indexOf(name)
         currentItem.to_receive_from.splice(index, 1)
-        currentItem.cost_per_pax = roundToTwoDp(currentItem.cost / (currentItem.to_receive_from.length + 1))
+        currentItem.cost_per_pax = roundToTwoDp(currentItem.cost / currentItem.to_receive_from.length)
         if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
             ITEMS.value.splice(indexOfObj, 1)
         }

@@ -39,7 +39,7 @@ function getItemLabel(name) {
                             <div v-if="item.who_paid === name">
                                 <div class="custom-item">
                                     <div class="custom-badge">
-                                        <Badge :value="`#${index + 1}`" severity="secondary"/>
+                                        <Badge :value="`#${index + 1}`" severity="secondary" />
                                     </div>
                                     <p class="m-0 title">
                                         {{ item.description }}
@@ -60,6 +60,7 @@ function getItemLabel(name) {
                                         severity="danger" size="small" aria-label="Remove Expense"></Button>
                                 </div>
                             </div>
+
                         </div>
                     </Fieldset>
                 </div>

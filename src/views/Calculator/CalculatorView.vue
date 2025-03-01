@@ -2,10 +2,12 @@
 import Step1 from "./Step1.vue";
 import Step2 from "./Step2.vue";
 import { clearData } from "./calculatorStates.js";
+import MenuBar from "@/components/MenuBar.vue";
 </script>
 
 <template>
-    <main>
+    <div class="container">
+        <MenuBar class="menubar" />
 
         <h1>Split Expenses</h1>
 
@@ -34,12 +36,37 @@ import { clearData } from "./calculatorStates.js";
                 </StepItem>
             </Stepper>
         </div>
-    </main>
+    </div>
 </template>
 
 <style scoped>
+.menubar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 42px;
+    width: 100vw;
+}
+
+.container {
+    height: 80vh;
+    width: 80vw;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0px auto;
+    padding: 54px 40px 40px 40px;
+}
+
 .space-gap {
     margin-top: 20px;
     margin-bottom: 10px;
+}
+
+@media (max-width: 800px) {
+    .container {
+        padding: 54px 0px 0px 0px;
+    }
 }
 </style>
