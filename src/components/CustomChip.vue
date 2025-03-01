@@ -11,4 +11,8 @@ const props = defineProps({
     </Chip>
 </template>
 
-<style scoped></style>
+<style scoped>
+span:hover {
+    cursor: pointer;
+}
+</style>

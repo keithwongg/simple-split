@@ -1,43 +1,39 @@
 <script setup>
 import CustomChip from '@/components/CustomChip.vue';
-import { NAMES_KEY } from '@/constants/constants';
-import { getFromLocalStorageAsArray, titleCase } from '@/helpers/utils.js';
+import { NAMES_KEY, ITEMS_KEY } from '@/constants/constants';
+import { getFromLocalStorageAsArray, titleCase, roundToTwoDp, deepCopyArray, saveInLocalStorage } from '@/helpers/utils.js';
 import { ref, computed, watch } from 'vue';
-import { saveInLocalStorage } from '@/helpers/utils.js';
 
 const props = defineProps({
     activateCallback: Function
 })
-const ITEMS = ref([])
+const NAMES = getFromLocalStorageAsArray(NAMES_KEY)
+const ITEMS = ref(getFromLocalStorageAsArray(ITEMS_KEY))
 const paidBy = ref("");
-const paidAmount = ref("");
 const itemDescription = ref("");
+const paidAmount = ref("");
 const toSplitWith = ref("");
 
-function getListOtherThanPersonWhoPaid(name) {
-    let names = Utils.getFromLocalStorageAsArray(NAMES_KEY)
-    return names.filter((x) => x !== name)
+function getListOtherThanPersonWhoPaid() {
+    return NAMES.filter((x) => x !== paidBy.value)
 }
 
 function addExpense() {
-    let test = Utils.deepCopyArray(toSplitWith.value)
-    console.log(JSON.stringify(test))
     let item = {
         id: ITEMS.value.length + 1,
-        cost: paidAmount.value,
-        cost_per_pax: Utils.roundToTwoDp(paidAmount.value / NAMES.value.length),
-        description: Utils.titleCase(itemDescription.value),
-        to_receive_from: Utils.deepCopyArray(toSplitWith.value),
+        cost: roundToTwoDp(paidAmount.value),
+        cost_per_pax: roundToTwoDp(paidAmount.value / NAMES.length),
+        description: titleCase(itemDescription.value),
+        to_receive_from: deepCopyArray(toSplitWith.value),
         who_paid: paidBy.value,
     }
     ITEMS.value.push(item)
-    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
     paidAmount.value = ""
     itemDescription.value = ""
 }
 
 function removeExpense(id) {
-    ITEMS.value = Utils.removeItemFromStorageById(id, ITEMS_KEY)
+    ITEMS.value = removeItemFromStorageById(id, ITEMS_KEY)
 }
 
 function removeNameFromExpense(id, name) {
@@ -53,13 +49,13 @@ function removeNameFromExpense(id, name) {
     if (currentItem.to_receive_from === undefined || currentItem.to_receive_from.length <= 0) {
         ITEMS.value.splice(indexOfObj, 1)
     }
-    Utils.saveInLocalStorage(ITEMS_KEY, ITEMS.value)
 }
 
 
 watch(ITEMS, (newItems, oldItems) => {
-    Utils.saveInLocalStorage(ITEMS_KEY, newItems)
+    saveInLocalStorage(ITEMS_KEY, newItems)
 })
+
 </script>
 
 <template>
@@ -92,7 +88,7 @@ watch(ITEMS, (newItems, oldItems) => {
         </div>
 
         <div class="card flex justify-center">
-            <MultiSelect v-model="toSplitWith" :options="getListOtherThanPersonWhoPaid(paidBy)" filter
+            <MultiSelect v-model="toSplitWith" :options="getListOtherThanPersonWhoPaid()" filter
                 placeholder="Select Who To Split With?" :maxSelectedLabels="15" class="w-full md:w-80" />
         </div>
         <Button class="space-gap" @click="addExpense()" label="Add Expense +" severity="primary"

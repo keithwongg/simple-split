@@ -9,12 +9,6 @@ import { NAMES_KEY, ITEMS_KEY, ADJMATRIX_KEY } from "@/constants/constants.js";
 /* STEP 1: NAMES */
 
 /* STEP 2: PAID AMOUNT / EXPENSES */
-const ITEMS = ref([])
-const paidBy = ref("");
-const paidAmount = ref("");
-const itemDescription = ref("");
-const toSplitWith = ref("");
-
 
 function clearData() {
     NAMES.value = []
