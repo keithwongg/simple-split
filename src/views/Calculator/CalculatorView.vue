@@ -64,6 +64,10 @@ import MenuBar from "@/components/MenuBar.vue";
     margin-bottom: 10px;
 }
 
+.card {
+    padding-bottom: 30px;
+}
+
 @media (max-width: 800px) {
     .container {
         padding: 54px 0px 0px 0px;

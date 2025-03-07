@@ -8,14 +8,14 @@ import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
       <h1 class="title">How to Use</h1>
 
       <Panel header="STEP 1: Add Names of People Involved">
-        <Image src="/src/assets/ss1.png" class="ss-first" />
+        <Image src="src/assets/ss1.png" class="ss-first" />
         <p class="m-0">
           Enter a name, then click add. Add the names of the people involved in the splitting of costs.
           Note: if you delete a name, all relevant items related to that name will be deleted.
         </p>
       </Panel>
       <Panel header="STEP 2: Add List of Items">
-        <Image src="/src/assets/ss2.png" class="ss-second" />
+        <Image src="src/assets/ss2.png" class="ss-second" />
         <p class="m-0">
           Enter the name of the person who paid for an item.
           Choose from the list of parties who will split the cost for that item.
@@ -23,7 +23,7 @@ import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
         </p>
       </Panel>
       <Panel header="STEP 3: Click on Summary">
-        <Image src="/src/assets/ss3.png" class="ss-third" />
+        <Image src="src/assets/ss3.png" class="ss-third" />
         <p class="m-0">
           You will be routed to the Summary page
         </p>
@@ -78,6 +78,7 @@ import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
   max-width: 200px;
   height: 100%;
   width: 100%;
+  padding-bottom: 30px;
 }
 
 @media (max-width: 800px) {

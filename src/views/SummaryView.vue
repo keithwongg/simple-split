@@ -135,8 +135,8 @@ function contraBalances() {
 
 .buttons {
     max-width: 200px;
-    height: 100%;
     width: 100%;
+    padding-bottom: 30px;
 }
 
 @media (max-width: 800px) {
