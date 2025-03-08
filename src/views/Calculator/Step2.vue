@@ -45,12 +45,12 @@ function addExpense() {
             </InputGroup>
             <InputGroup>
                 <IftaLabel>
-                    <InputText id="itemDescriptionInput" v-model="itemDescription" max-fraction-digits="2" />
+                    <InputText id="itemDescriptionInput" v-model="itemDescription" />
                     <label for="itemDescriptionInput">Item Description</label>
                 </IftaLabel>
                 <IftaLabel variant="on">
-                    <InputNumber v-model="paidAmount" inputId="priceInput" :maxFractionDigits="2" mode="decimal"
-                        inputmode="decimal" />
+                    <InputNumber v-model="paidAmount" inputId="priceInput" min-fraction-digits="2"
+                        max-fraction-digits="2" mode="decimal" inputmode="decimal" />
                     <label for="priceInput">Price Input</label>
                 </IftaLabel>
 
