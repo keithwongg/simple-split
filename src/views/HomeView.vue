@@ -48,7 +48,7 @@ import RouterButtonWithIcon from '@/components/RouterButtonWithIcon.vue';
 .simple-split-background {
     position: absolute;
     z-index: -2;
-    background-image: url('/src/assets/background.jpg');
+    background-image: url('/public/images/background.jpg');
     background-size: cover;
     /* Stretches to fit */
     background-repeat: no-repeat;
