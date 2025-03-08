@@ -49,7 +49,7 @@ function addExpense() {
                     <label for="itemDescriptionInput">Item Description</label>
                 </IftaLabel>
                 <IftaLabel variant="on">
-                    <InputNumber v-model="paidAmount" inputId="priceInput" :maxFractionDigits="2" />
+                    <InputNumber v-model="paidAmount" inputId="priceInput" :maxFractionDigits="2" mode="decimal" />
                     <label for="priceInput">Price Input</label>
                 </IftaLabel>
 
