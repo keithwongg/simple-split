@@ -50,7 +50,7 @@ function addExpense() {
                 </IftaLabel>
                 <IftaLabel variant="on">
                     <InputNumber v-model="paidAmount" inputId="priceInput" min-fraction-digits="2"
-                        max-fraction-digits="2" mode="decimal" inputmode="decimal" />
+                        max-fraction-digits="2" mode="decimal" inputmode="decimal" highlightOnFocus="true" />
                     <label for="priceInput">Price Input</label>
                 </IftaLabel>
 
