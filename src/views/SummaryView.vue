@@ -3,6 +3,7 @@ import { roundToTwoDp } from '@/helpers/utils.js';
 import { NAMES, ITEMS } from './Calculator/calculatorStates.js';
 import ItemLogs from './Calculator/ItemLogs.vue';
 import { ref } from 'vue';
+import { Buffer } from 'buffer';
 
 const adjMatrix = []
 const visible = ref(false)
@@ -71,15 +72,100 @@ function contraBalances() {
     console.log(`adjMatrix[contra]: ${adjMatrix}`)
 }
 
+
+const table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~"';
+function decode(data, encoding) {
+    const raw = '' + (data || '');
+    const len = raw.length;
+    const ret = [];
+
+    let b = 0;
+    let n = 0;
+    let v = -1;
+
+    for (let i = 0; i < len; i++) {
+        const p = table.indexOf(raw[i]);
+        if (p === -1) continue;
+        if (v < 0) {
+            v = p;
+        } else {
+            v += p * 91;
+            b |= v << n;
+            n += (v & 8191) > 88 ? 13 : 14;
+            do {
+                ret.push(b & 0xff);
+                b >>= 8;
+                n -= 8;
+            } while (n > 7);
+            v = -1;
+        }
+    }
+
+    if (v > -1) {
+        ret.push((b | v << n) & 0xff);
+    }
+
+    return encoding ?
+        Buffer.from(ret).toString(encoding) :
+        Buffer.from(ret);
+};
+
+function encode(data, encoding = 'utf8') {
+    if (data == null) {
+        throw new Error('base91: Missing data to encode.');
+    }
+    const raw = Buffer.isBuffer(data) ? data :
+        typeof data === 'number' ? Buffer.from(data.toString(), encoding) :
+            Buffer.from(data, encoding);
+    const len = raw.length;
+    let ret = '';
+
+    let n = 0;
+    let b = 0;
+
+    for (let i = 0; i < len; i++) {
+        b |= raw[i] << n;
+        n += 8;
+
+        if (n > 13) {
+            let v = b & 8191;
+            if (v > 88) {
+                b >>= 13;
+                n -= 13;
+            } else {
+                v = b & 16383;
+                b >>= 14;
+                n -= 14;
+            }
+            ret += table[v % 91] + table[v / 91 | 0];
+        }
+    }
+
+    if (n) {
+        ret += table[b % 91];
+        if (n > 7 || b > 90) ret += table[b / 91 | 0];
+    }
+
+    return ret;
+};
+
 function exportCurrentData() {
+
     let data = JSON.stringify({ items: ITEMS.value, names: NAMES.value })
-    console.log(`checkdata: ${data}`)
-    let bindata = new TextEncoder().encode(data)
-    console.log(`checkbindata: ${btoa(bindata)}`)
-    let decdata = new TextDecoder().decode(bindata)
-    console.log(`checkdecodeddata: ${decdata}`)
+    // console.log(`checkdata: ${data}`)
+    // let bindata = new TextEncoder().encode(data)
+    // console.log(`checkbindata: ${btoa(bindata)}`)
+    // let decdata = new TextDecoder().decode(bindata)
+    // console.log(`checkdecodeddata: ${decdata}`)
+
+    const encodedText = encode(data);
+    console.log(`base91: ${encodedText} | length: ${encodedText.length}`);  //=> >OwJh>Io0Tv!8PE
+    const deco = decode(encodedText)
+    console.log(`specialdecode: ${deco}`);  //=> >OwJh>Io0Tv!8PE
+    console.log(`specialdecode-pasre: ${JSON.parse(deco)}`);  //=> >OwJh>Io0Tv!8PE
 
     let base64Encoded = btoa(data)
+    console.log(`btoa: ${base64Encoded} | length: ${base64Encoded.length}`);  //=> >OwJh>Io0Tv!8PE
     let text = `Copy and Paste in Simple Split to see breakdown.\nText to Paste: ${base64Encoded}`
     navigator.clipboard.writeText(text)
     return base64Encoded
