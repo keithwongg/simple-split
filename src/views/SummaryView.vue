@@ -2,8 +2,10 @@
 import { roundToTwoDp } from '@/helpers/utils.js';
 import { NAMES, ITEMS } from './Calculator/calculatorStates.js';
 import ItemLogs from './Calculator/ItemLogs.vue';
+import { ref } from 'vue';
 
 const adjMatrix = []
+const visible = ref(false)
 
 createAdjMatrix()
 addItemCostsToAdjMatrix()
@@ -69,6 +71,24 @@ function contraBalances() {
     console.log(`adjMatrix[contra]: ${adjMatrix}`)
 }
 
+function exportCurrentData() {
+    let data = JSON.stringify({ items: ITEMS.value, names: NAMES.value })
+    console.log(`checkdata: ${data}`)
+    let bindata = new TextEncoder().encode(data)
+    console.log(`checkbindata: ${btoa(bindata)}`)
+    let decdata = new TextDecoder().decode(bindata)
+    console.log(`checkdecodeddata: ${decdata}`)
+
+    let base64Encoded = btoa(data)
+    let text = `Copy and Paste in Simple Split to see breakdown.\nText to Paste: ${base64Encoded}`
+    navigator.clipboard.writeText(text)
+    return base64Encoded
+}
+
+function shareData() {
+    visible.value = true
+    exportCurrentData()
+}
 
 </script>
 
@@ -78,6 +98,9 @@ function contraBalances() {
 
         <Divider />
         <div v-if="ITEMS.value.length >= 1">
+
+            <Button label="Share with Friends" @click="shareData" />
+
             <Card v-for="(row, xIndex) in adjMatrix">
                 <template #title>{{ NAMES.value[xIndex] }}</template>
                 <template #content>
