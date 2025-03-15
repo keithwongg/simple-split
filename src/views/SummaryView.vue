@@ -5,6 +5,7 @@ import ItemLogs from './Calculator/ItemLogs.vue';
 import html2canvas from 'html2canvas';
 
 const adjMatrix = []
+const backgroundColor = '#18181b'
 
 createAdjMatrix()
 addItemCostsToAdjMatrix()
@@ -70,48 +71,29 @@ function contraBalances() {
     console.log(`adjMatrix[contra]: ${adjMatrix}`)
 }
 
-//18181b
-/*
-    let maxScreenHeight = window.scrollMaxY
-    let maxScreenWidth = screen.width
-    html2canvas(document.querySelector(`#${id}`),
+function screenShotFullPage() {
+    html2canvas(document.querySelector(`#settleup-breakdown`),
         {
-            backgroundColor: '#ffff'
+            backgroundColor: backgroundColor
         }).then(canvas => {
-            var dataURL = canvas.toDataURL("image/jpeg", 1.0);
-            downloadImage(dataURL, `${id}.jpeg`);
-            // document.body.appendChild(canvas)
-        });
-*/
-function screenShot(id) {
-    let maxScreenHeight = window.scrollMaxY
-    let maxScreenWidth = screen.width
-    html2canvas(document.querySelector(`#names-breakdown`),
-        {
-            backgroundColor: '#18181b'
-        }).then(canvas => {
-            // var dataURL = canvas.toDataURL("image/jpeg", 1.0);
-            // downloadImage(dataURL, `${id}.jpeg`);
-            // document.body.appendChild(canvas)
-
             html2canvas(document.querySelector(`#items-breakdown`),
                 {
-                    backgroundColor: '#18181b'
+                    backgroundColor: backgroundColor
                 }).then(canvas2 => {
                     var dataURL = verticalCanvases(canvas, canvas2)
                     downloadImage(dataURL, `summary.jpeg`);
-                    // document.body.appendChild(canvas)
                 });
         });
 }
 
-// Save | Download image
-function downloadImage(data, filename = 'untitled.jpeg') {
-    var a = document.createElement('a');
-    a.href = data;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
+function screenShotComponent(id) {
+    html2canvas(document.querySelector(`#${id}`),
+        {
+            backgroundColor: backgroundColor
+        }).then(canvas => {
+            let dataURL = canvas.toDataURL("image/jpeg", 1.0);
+            downloadImage(dataURL, `${id}.jpeg`);
+        });
 }
 
 /* assumes each canvas has the same width */
@@ -139,18 +121,30 @@ var verticalCanvases = function (cnv1, cnv2) {
     return newCanvas.toDataURL("image/jpeg", 1.0);
 };
 
+function downloadImage(data, filename = 'untitled.jpeg') {
+    var a = document.createElement('a');
+    a.href = data;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+}
+
 </script>
 
 <template>
     <div class="container">
-        <h1>Summary</h1>
-        <Button @click="screenShot('names-breakdown')">Save Names</Button>
-        <Button @click="screenShot('items-breakdown')">Save Items</Button>
+        <div class="title-container">
+            <h1>Summary</h1>
+            <Button icon='pi pi-download' iconPos="left" label="Save Screenshot" @click="screenShotFullPage()" />
+        </div>
 
         <Divider />
         <div v-if="ITEMS.value.length >= 1">
-            <div id="names-breakdown">
-                <h1>Names Summary</h1>
+            <div id="settleup-breakdown">
+                <div class="title-container">
+                    <h1>To Settle Up</h1>
+                    <Button icon='pi pi-download' iconPos="left" @click="screenShotComponent('settleup-breakdown')" />
+                </div>
                 <Card v-for="(row, xIndex) in adjMatrix">
                     <template #title>{{ NAMES.value[xIndex] }}</template>
                     <template #content>
@@ -169,7 +163,10 @@ var verticalCanvases = function (cnv1, cnv2) {
             <Divider />
 
             <div id="items-breakdown">
-                <h1>Items Logs</h1>
+                <div class="title-container">
+                    <h1>Items Logs</h1>
+                    <Button icon='pi pi-download' iconPos="left" @click="screenShotComponent('items-breakdown')" />
+                </div>
                 <ItemLogs :editable="false" />
 
             </div>
@@ -190,6 +187,17 @@ var verticalCanvases = function (cnv1, cnv2) {
 </template>
 
 <style scoped>
+.title-container {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
+
+.title-container button {
+    height: 36px;
+}
+
 .space-gap {
     margin-bottom: 20px;
 }
