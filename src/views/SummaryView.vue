@@ -80,8 +80,10 @@ function screenShotFullPage() {
                 {
                     backgroundColor: backgroundColor
                 }).then(canvas2 => {
-                    var dataURL = verticalCanvases(canvas, canvas2)
-                    downloadImage(dataURL, `summary.jpeg`);
+                    var combinedCanvas = verticalCanvases(canvas, canvas2)
+                    webShareOrDownload(combinedCanvas, 'summary')
+
+                    // downloadImage(dataURL, `summary.jpeg`);
                 });
         });
 }
@@ -91,8 +93,11 @@ function screenShotComponent(id) {
         {
             backgroundColor: backgroundColor
         }).then(canvas => {
-            let dataURL = canvas.toDataURL("image/jpeg", 1.0);
-            downloadImage(dataURL, `${id}.jpeg`);
+
+            // alert(navigator.userAgent)
+            // use ios webshare api to save to photos app instead of files
+            webShareOrDownload(canvas, id)
+
         });
 }
 
@@ -118,10 +123,36 @@ var verticalCanvases = function (cnv1, cnv2) {
         ctx.drawImage(n.cnv, 0, n.y, width, n.cnv.height);
     });
 
-    return newCanvas.toDataURL("image/jpeg", 1.0);
+    // return newCanvas.toDataURL("image/jpeg", 1.0);
+    return newCanvas
 };
 
-function downloadImage(data, filename = 'untitled.jpeg') {
+function webShareOrDownload(canvas, title) {
+    if (navigator.userAgent.includes('Apple')) {
+        canvas.toBlob(function (blob) {
+            const file = new File([blob], `${title}.png`, { type: "image/png" });
+
+            // Check if sharing is supported
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: title,
+                }).catch(function (error) {
+                    console.error("Sharing failed:", error);
+                });
+            } else {
+                // alert("Sharing not supported, please save manually.");
+                let dataURL = canvas.toDataURL("image/png", 1.0);
+                downloadImage(dataURL, `${title}.png`);
+            }
+        }, "image/png");
+    } else {
+        let dataURL = canvas.toDataURL("image/png", 1.0);
+        downloadImage(dataURL, `${title}.png`);
+    }
+}
+
+function downloadImage(data, filename = 'untitled.png') {
     var a = document.createElement('a');
     a.href = data;
     a.download = filename;
@@ -133,7 +164,7 @@ function downloadImage(data, filename = 'untitled.jpeg') {
 
 <template>
     <div class="container">
-        <div class="title-container">
+        <div class="title-container summary">
             <h1>Summary</h1>
             <Button icon='pi pi-download' iconPos="left" label="Save Screenshot" @click="screenShotFullPage()" />
         </div>
@@ -228,6 +259,12 @@ function downloadImage(data, filename = 'untitled.jpeg') {
 @media (max-width: 800px) {
     .container {
         padding: 54px 0px 0px 0px;
+    }
+}
+
+@media (max-width: 400px) {
+    .title-container.summary {
+        flex-direction: column;
     }
 }
 </style>
