@@ -2,6 +2,7 @@
 import { roundToTwoDp } from '@/helpers/utils.js';
 import { NAMES, ITEMS } from './Calculator/calculatorStates.js';
 import ItemLogs from './Calculator/ItemLogs.vue';
+import html2canvas from 'html2canvas';
 
 const adjMatrix = []
 
@@ -69,32 +70,109 @@ function contraBalances() {
     console.log(`adjMatrix[contra]: ${adjMatrix}`)
 }
 
+//18181b
+/*
+    let maxScreenHeight = window.scrollMaxY
+    let maxScreenWidth = screen.width
+    html2canvas(document.querySelector(`#${id}`),
+        {
+            backgroundColor: '#ffff'
+        }).then(canvas => {
+            var dataURL = canvas.toDataURL("image/jpeg", 1.0);
+            downloadImage(dataURL, `${id}.jpeg`);
+            // document.body.appendChild(canvas)
+        });
+*/
+function screenShot(id) {
+    let maxScreenHeight = window.scrollMaxY
+    let maxScreenWidth = screen.width
+    html2canvas(document.querySelector(`#names-breakdown`),
+        {
+            backgroundColor: '#18181b'
+        }).then(canvas => {
+            // var dataURL = canvas.toDataURL("image/jpeg", 1.0);
+            // downloadImage(dataURL, `${id}.jpeg`);
+            // document.body.appendChild(canvas)
+
+            html2canvas(document.querySelector(`#items-breakdown`),
+                {
+                    backgroundColor: '#18181b'
+                }).then(canvas2 => {
+                    var dataURL = verticalCanvases(canvas, canvas2)
+                    downloadImage(dataURL, `summary.jpeg`);
+                    // document.body.appendChild(canvas)
+                });
+        });
+}
+
+// Save | Download image
+function downloadImage(data, filename = 'untitled.jpeg') {
+    var a = document.createElement('a');
+    a.href = data;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+}
+
+/* assumes each canvas has the same width */
+var verticalCanvases = function (cnv1, cnv2) {
+    var newCanvas = document.createElement('canvas')
+    ctx = newCanvas.getContext('2d')
+    width = cnv1.width
+    height = cnv1.height + cnv2.height
+
+    newCanvas.width = width;
+    newCanvas.height = height;
+
+    [{
+        cnv: cnv1,
+        y: 0
+    },
+    {
+        cnv: cnv2,
+        y: cnv1.height
+    }].forEach(function (n) {
+        ctx.beginPath();
+        ctx.drawImage(n.cnv, 0, n.y, width, n.cnv.height);
+    });
+
+    return newCanvas.toDataURL("image/jpeg", 1.0);
+};
 
 </script>
 
 <template>
     <div class="container">
         <h1>Summary</h1>
+        <Button @click="screenShot('names-breakdown')">Save Names</Button>
+        <Button @click="screenShot('items-breakdown')">Save Items</Button>
 
         <Divider />
         <div v-if="ITEMS.value.length >= 1">
-            <Card v-for="(row, xIndex) in adjMatrix">
-                <template #title>{{ NAMES.value[xIndex] }}</template>
-                <template #content>
-                    <div v-for="(item, yIndex) in row">
-                        <p v-if="adjMatrix[xIndex][yIndex] > 0">
-                            To Receive From {{ NAMES.value[yIndex] }}: {{ adjMatrix[xIndex][yIndex] }}
-                        </p>
-                        <p v-if="adjMatrix[yIndex][xIndex] > 0">
-                            Owe {{ NAMES.value[yIndex] }}: {{ adjMatrix[yIndex][xIndex] }}
-                        </p>
-                    </div>
-                </template>
-            </Card>
+            <div id="names-breakdown">
+                <h1>Names Summary</h1>
+                <Card v-for="(row, xIndex) in adjMatrix">
+                    <template #title>{{ NAMES.value[xIndex] }}</template>
+                    <template #content>
+                        <div v-for="(item, yIndex) in row">
+                            <p v-if="adjMatrix[xIndex][yIndex] > 0">
+                                To Receive From {{ NAMES.value[yIndex] }}: {{ adjMatrix[xIndex][yIndex] }}
+                            </p>
+                            <p v-if="adjMatrix[yIndex][xIndex] > 0">
+                                Owe {{ NAMES.value[yIndex] }}: {{ adjMatrix[yIndex][xIndex] }}
+                            </p>
+                        </div>
+                    </template>
+                </Card>
+
+            </div>
             <Divider />
 
-            <h1>Items Logs</h1>
-            <ItemLogs :editable="false" />
+            <div id="items-breakdown">
+                <h1>Items Logs</h1>
+                <ItemLogs :editable="false" />
+
+            </div>
 
 
             <div class="buttons">
