@@ -117,9 +117,9 @@ function downloadImage(data, filename = 'untitled.jpeg') {
 /* assumes each canvas has the same width */
 var verticalCanvases = function (cnv1, cnv2) {
     var newCanvas = document.createElement('canvas')
-    ctx = newCanvas.getContext('2d')
-    width = cnv1.width
-    height = cnv1.height + cnv2.height
+    let ctx = newCanvas.getContext('2d')
+    let width = cnv1.width
+    let height = cnv1.height + cnv2.height
 
     newCanvas.width = width;
     newCanvas.height = height;

@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
     <Tag :label="props.label" class="custom-background" rounded severity="secondary">
-        <p>{{ props.label }}</p>
+        {{ props.label }}
         <span v-if="props.editable" @click="$emit('customRemove')" class="pi pi-times-circle"></span>
     </Tag>
 </template>
@@ -19,6 +19,10 @@ const props = defineProps({
 <style scoped>
 span:hover {
     cursor: pointer;
+}
+
+.p-tag {
+    font-weight: normal;
 }
 
 .custom-background {
