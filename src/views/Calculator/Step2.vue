@@ -29,7 +29,7 @@ function addExpense() {
 </script>
 
 <template>
-    <div>
+    <div class="step-container">
         <div class="flex flex-col h-48">
             <div
                 class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
@@ -58,10 +58,8 @@ function addExpense() {
 
         </div>
 
-        <div class="card flex justify-center">
-            <MultiSelect v-model="toSplitWith" :options="NAMES.value" filter placeholder="Select Who To Split With?"
-                :maxSelectedLabels="15" class="w-full md:w-80" />
-        </div>
+        <MultiSelect v-model="toSplitWith" :options="NAMES.value" filter placeholder="Select Who To Split With?"
+            :maxSelectedLabels="3" class="multi" />
 
         <Button class="space-gap" @click="addExpense()" label="Add Expense +" severity="primary"
             variant="outlined"></Button>
@@ -76,6 +74,12 @@ function addExpense() {
 </template>
 
 <style scoped>
+.step-container {
+    width: 90%;
+    max-width: 90%;
+    overflow: scroll;
+}
+
 .space-gap {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -84,5 +88,11 @@ function addExpense() {
 .custom-buttons-block {
     display: flex;
     gap: 12px;
+    margin: 24px auto;
+}
+
+.multi {
+    max-width: 100%;
+    width: 100%;
 }
 </style>

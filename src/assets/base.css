@@ -84,3 +84,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+
+/* Overwrite prime vue components */
+.p-confirmdialog {
+  max-width: 100%;
+}
+
+.p-toast {
+  max-width: 80%;
+}
