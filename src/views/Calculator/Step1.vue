@@ -63,7 +63,7 @@ const confirmRemoveName = (name) => {
 </script>
 
 <template>
-    <div>
+    <div class="step-container">
         <div class="flex flex-col h-48">
             <div
                 class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
@@ -71,19 +71,17 @@ const confirmRemoveName = (name) => {
             </div>
             <Message v-if="nameExistError" severity="error" icon="pi pi-times-circle" class="mb-2 space-gap">
                 Name Already Exist</Message>
-            <div class="custom-buttons-block">
-                <InputGroup>
-                    <InputGroupAddon>
-                        <OverlayBadge v-if="showNames" :value="NAMES.value.length" size="small">
-                            <i class="pi pi-user"></i>
-                        </OverlayBadge>
-                        <i v-else class="pi pi-user"></i>
-                    </InputGroupAddon>
-                    <InputText @keyup.enter="addNames()" v-model="nameInput" placeholder="Name" />
-                    <Button class="space-gap" @click="addNames()" label="Add +" severity="primary"
-                        variant="outlined"></Button>
-                </InputGroup>
-            </div>
+            <InputGroup>
+                <InputGroupAddon>
+                    <OverlayBadge v-if="showNames" :value="NAMES.value.length" size="small">
+                        <i class="pi pi-user"></i>
+                    </OverlayBadge>
+                    <i v-else class="pi pi-user"></i>
+                </InputGroupAddon>
+                <InputText @keyup.enter="addNames()" v-model="nameInput" placeholder="Name" />
+                <Button class="space-gap" @click="addNames()" label="Add +" severity="primary"
+                    variant="outlined"></Button>
+            </InputGroup>
         </div>
         <div class="space-gap" v-if="showNames">
             <Toast />
@@ -106,7 +104,9 @@ const confirmRemoveName = (name) => {
     margin-top: 12px;
 }
 
-.full-width {
-    width: 100%;
+.step-container {
+    width: 80%;
+    max-width: 80%;
+    overflow: scroll;
 }
 </style>

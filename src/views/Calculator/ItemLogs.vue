@@ -23,7 +23,7 @@ function getItemLabel(name) {
 </script>
 
 <template>
-    <div>
+    <div class="itemlogs-container">
         <p class="space-gap">Total number of items:
             <Badge :value="ITEMS.value.length" />
         </p>
@@ -33,14 +33,11 @@ function getItemLabel(name) {
         <div class="space-gap">
             <div v-if="logType === 'By Name'">
                 <div v-for="name in NAMES.value" class="space-gap">
-                    <Fieldset v-if="countItemsByName(name) > 0" class="space-gap custom-card"
+                    <Fieldset v-if="countItemsByName(name) > 0" class="space-gap"
                         :legend="`${name} paid: ${countItemsByName(name)} ${getItemLabel(name)}`" :toggleable="true">
                         <div v-for="(item, index) in ITEMS.value">
                             <div v-if="item.who_paid === name">
                                 <div class="custom-item">
-                                    <div class="custom-badge">
-                                        <Badge :value="`#${index + 1}`" severity="secondary" />
-                                    </div>
                                     <p class="m-0 title">
                                         {{ item.description }}
                                     </p>
@@ -57,7 +54,8 @@ function getItemLabel(name) {
                                             @custom-remove="ITEMS.removeName(item.id, name)" />
                                     </p>
                                     <Button v-if="props.editable" icon="pi pi-times" @click="ITEMS.remove(item.id)"
-                                        severity="danger" size="small" aria-label="Remove Expense"></Button>
+                                        severity="danger" size="small" aria-label="Remove Expense" label="Remove"
+                                        style="margin-top: 8px;"></Button>
                                 </div>
                             </div>
 
@@ -65,7 +63,7 @@ function getItemLabel(name) {
                     </Fieldset>
                 </div>
             </div>
-            <div v-else class="card">
+            <div v-else>
                 <Fieldset v-for="item in ITEMS.value" :legend="`${item.description}: ${item.who_paid}`"
                     :toggleable="true">
                     <p class="m-0">
@@ -83,7 +81,7 @@ function getItemLabel(name) {
                             @custom-remove="ITEMS.removeName(item.id, name)" />
                     </p>
                     <Button v-if="props.editable" icon="pi pi-times" @click="ITEMS.remove(item.id)" severity="danger"
-                        size="small" aria-label="Remove Expense"></Button>
+                        size="small" aria-label="Remove Expense" label="Remove" style="margin-top: 8px;"></Button>
                 </Fieldset>
             </div>
         </div>
@@ -92,6 +90,11 @@ function getItemLabel(name) {
 </template>
 
 <style scoped>
+.itemlogs-container {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
 .space-gap {
     margin-top: 20px;
     margin-bottom: 10px;
@@ -100,12 +103,7 @@ function getItemLabel(name) {
 fieldset {
     position: relative;
     background-color: var(--p-surface-800);
-}
-
-fieldset :deep(.p-button) {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
+    width: 90%;
 }
 
 fieldset :deep(.p-fieldset-legend-label) {
@@ -120,7 +118,8 @@ fieldset :deep(.p-fieldset-legend-label) {
     background-color: var(--p-surface-700);
     margin: 8px 0px;
     padding: 12px;
-    border-radius: 6%;
+    border-radius: 5px;
+    overflow-x: scroll;
 }
 
 .title {
